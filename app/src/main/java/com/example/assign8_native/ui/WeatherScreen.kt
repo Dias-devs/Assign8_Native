@@ -1,4 +1,4 @@
-package com.example.assign8.ui
+package com.example.assign8_native.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -105,7 +105,6 @@ fun WeatherScreen(viewModel: WeatherViewModel = viewModel()) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Daily forecast cards
                     data.daily.time.take(3).forEachIndexed { i, day ->
                         Card(
                             shape = RoundedCornerShape(16.dp),

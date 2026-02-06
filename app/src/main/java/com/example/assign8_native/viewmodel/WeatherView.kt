@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.assign8.data.model.WeatherResponse
 import com.example.assign8.data.remote.Retrofit
-import com.example.assign8.data.repo.WeatherRepo
+import com.example.assign8_native.data.repo.WeatherRepo
 import com.example.assign8.util.CacheManager
 import com.example.assign8.util.NetworkResult
 import kotlinx.coroutines.flow.MutableStateFlow

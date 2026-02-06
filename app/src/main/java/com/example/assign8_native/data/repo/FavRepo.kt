@@ -1,20 +1,17 @@
 package com.example.assign8_native.data.repo
 
-import com.example.assign8_native.auth.FirebaseAuthManager
 import com.example.assign8_native.data.model.FavoriteCity
 import com.google.firebase.database.*
 
-class FirebaseFavoritesRepository {
-
-    private val db = FirebaseDatabase.getInstance()
-    private val uid = FirebaseAuthManager.getUid()!!
-
-    private val ref = db.getReference("favorites").child(uid)
-
-    fun observeFavorites(
-        onChange: (List<FavoriteCity>) -> Unit
-    ) {
-        ref.addValueEventListener(object : ValueEventListener {
+class FirebaseFavoritesRepository(private val uid: String) {
+    private val dbRef = FirebaseDatabase
+        .getInstance(
+            "https://weather-project-766b7-default-rtdb.asia-southeast1.firebasedatabase.app"
+        )
+        .getReference("favorites")
+        .child(uid)
+    fun observeFavorites(onChange: (List<FavoriteCity>) -> Unit) {
+        dbRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = snapshot.children.mapNotNull {
                     it.getValue(FavoriteCity::class.java)
@@ -27,21 +24,21 @@ class FirebaseFavoritesRepository {
     }
 
     fun add(city: String, note: String) {
-        val id = ref.push().key!!
+        val id = dbRef.push().key!!
         val fav = FavoriteCity(
             id = id,
             city = city,
             createdBy = uid,
             note = note
         )
-        ref.child(id).setValue(fav)
+        dbRef.child(id).setValue(fav)
     }
 
     fun update(fav: FavoriteCity) {
-        ref.child(fav.id).setValue(fav)
+        dbRef.child(fav.id).setValue(fav)
     }
 
     fun delete(id: String) {
-        ref.child(id).removeValue()
+        dbRef.child(id).removeValue()
     }
 }
