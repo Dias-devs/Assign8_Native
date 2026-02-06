@@ -12,14 +12,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.assign8_native.data.model.FavoriteCity
 import com.example.assign8_native.viewmodel.FavoritesViewModel
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun FavoritesScreen(modifier: Modifier = Modifier) {
-
     val auth = FirebaseAuth.getInstance()
-    var uid by remember { mutableStateOf<String?>(auth.currentUser?.uid) }
+    var uid by remember { mutableStateOf(auth.currentUser?.uid) }
 
     LaunchedEffect(Unit) {
         if (uid == null) {
@@ -52,6 +52,7 @@ fun FavoritesScreen(modifier: Modifier = Modifier) {
 
     var cityInput by remember { mutableStateOf("") }
     var noteInput by remember { mutableStateOf("") }
+    var editingId by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = modifier
@@ -76,17 +77,29 @@ fun FavoritesScreen(modifier: Modifier = Modifier) {
         Button(
             onClick = {
                 if (cityInput.isNotBlank()) {
-                    viewModel.add(cityInput, noteInput)
+                    if (editingId != null) {
+                        viewModel.update(
+                            FavoriteCity(
+                                id = editingId!!,
+                                city = cityInput,
+                                note = noteInput,
+                                createdBy = uid!!
+                            )
+                        )
+                        editingId = null
+                    } else {
+                        viewModel.add(cityInput, noteInput)
+                    }
                     cityInput = ""
                     noteInput = ""
                 }
             },
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
-            Text("Add Favorite")
+            Text(if (editingId != null) "Update Favorite" else "Add Favorite")
         }
 
-        Divider(modifier = Modifier.padding(vertical = 8.dp))
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
         LazyColumn {
             items(favorites) { fav ->
@@ -105,6 +118,16 @@ fun FavoritesScreen(modifier: Modifier = Modifier) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End
                         ) {
+                            TextButton(
+                                onClick = {
+                                    cityInput = fav.city
+                                    noteInput = fav.note
+                                    editingId = fav.id
+                                }
+                            ) {
+                                Text("Edit")
+                            }
+
                             TextButton(
                                 onClick = { viewModel.delete(fav.id) }
                             ) {

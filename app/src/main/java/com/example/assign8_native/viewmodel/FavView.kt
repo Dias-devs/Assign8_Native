@@ -26,6 +26,10 @@ class FavoritesViewModel(uid: String) : ViewModel() {
         repo.add(city, note)
     }
 
+    fun update(fav: FavoriteCity) {
+        repo.update(fav)
+    }
+
     fun delete(id: String) {
         repo.delete(id)
     }
